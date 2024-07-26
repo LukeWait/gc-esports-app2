@@ -121,7 +121,7 @@ gc-esports-app2/
 ```
 
 ### SQL Database Structure
-```sh
+```
 gc_esports Database
 └── Tables:
     ├── event
@@ -131,7 +131,7 @@ gc_esports Database
     │
     ├── game
     │   ├── name (PK)
-    │   ├── type
+    │   └── type
     │
     ├── team
     │   ├── name (PK)

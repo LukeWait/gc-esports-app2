@@ -18,11 +18,11 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `goldcoast_esports`
+-- Database: `gc_esports`
 --
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`goldcoast_esports` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`gc_esports` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
 
-USE `goldcoast_esports`;
+USE `gc_esports`;
 -- --------------------------------------------------------
 -- --------------------------------------------------------
 

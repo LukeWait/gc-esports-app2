@@ -1,137 +1,22 @@
 /*******************************************************************************
-File name:  GC_EGames_V2_GUI.java
-Purpose:    1.  Set up GUI and functionality for the teamsStrArray and competitions
-            2.  Constructor method reads in data from goldcoast_esports database and sets up GUI
-            3.  Program uses DB_Read and DB_Write classes to connect to database
-                and run SQL statements to retrieve/write table data
-Author:     Luke Wait
-Date:       29-Sept-2022
-Version:    2.2
-NOTES:      Created jar file for DB_Read and DB_Write classes and imported
-            Reintroduced arrays to store sql returned data to minimise the number of sql queries
-            and database connections
-            Now it only accesses the database when constructor runs and when new data is added
+File name: GCEsportsApp2.java
+Description:    1.  Set up GUI and functionality for the teamsStrArray and competitions
+                2.  Constructor method reads in data from gc_esports database and sets up GUI
+                3.  Program uses DB_Read and DB_Write classes to connect to database
+                    and run SQL statements to retrieve/write table data
+Version: 1.2.0
+Author: ┬  ┬ ┬┬┌─┌─┐┬ ┬┌─┐╦╔╦╗
+        │  │ │├┴┐├┤ │││├─┤║ ║
+        ┴─┘└─┘┴ ┴└─┘└┴┘┴ ┴╩ ╩
+Date: September 29, 2022
+License: MIT Licensed
 
-DEVELOPMENT PLAN
-01. Read through documentation provided for project                                     ---DONE
-02. Set up goldcoast_esports database (goldcoast_esports.sql)                           ---DONE
-03. Create and test DB_Read class (in separate project)                                 ---DONE
-04. Create and test DB_Write class (in separate project)                                ---DONE
-    Create JAR file for both DB_Read and DB_Write classes and import here               ---DONE
-05. Set up GUI components (5 tab panels)                                                ---DONE
-06. In GUI class:                                                                       ---DONE
-        - set up customizations for 3 jTables                                           
-        - set up private data                                                           
-        - set up GUI constructor method                                                 
-        - include resizeTableColumn() methods in GUI class                              
-        - include selectionSort() method for 2D Object[][] array                        
-        - include other methods ('shell' - with no functional code)                     
-        - include all event handler methods ('shell') for jComboBoxes                   
-        - include all event handler methods ('shell') for jButtons                      
+Dependencies:
+Java JDK 17
+MySQL Connector/J 8.0.28
 
-FUNCTIONALITIES
-01. READ FROM DATABASE AND DISPLAY
-    Read all rows from goldcoast_esports.competition table and display in: 
-        - ecrCompResults_jTable (gameName, team1, team1Points, team2, team2Points)      ---DONE
-    Read all rows from goldcoast_esports.event table and display in:
-        - ecrEvent_jComboBox (formatted: name (date location))                          ---DONE
-        - ancrEvent_jComboBox (name)                                                    ---DONE
-    Read all rows from goldcoast_esports.team table and display in:
-        - ecrTeam_jComboBox (team)                                                      ---DONE
-        - ancrTeam1_jComboBox (team)                                                    ---DONE
-        - ancrTeam2_jComboBox (team)                                                    ---DONE
-        - uetTeamName_jComboBox (team)                                                  ---DONE
-    Read all rows from goldcoast_esports.game table and display in:
-        - ancrGame_jComboBox (game)                                                     ---DONE
-
-02. EVENT COMPETITION RESULTS PANEL
-    Set up ecrEvent_jComboBox item state changed event handler:
-        - when "All events" is selected, the ecrLeaderBoardAll_jTable displays
-          each team with total points accumulated for all events
-          nothing is displayed in the ecrLeaderBoardSelected_jTable
-          and all competition results are shown in ecrCompResults_jTable                ---DONE
-        - when a single event is selected, the ecrLeaderBoardSelected_jTable displays
-          each team with total points accumulated for the specific event chosen,
-          nothing is displayed in the ecrLeaderBoardAll_jTable
-          and only the competition results for the selected event are shown in
-          ecrCompResults_jTable                                                         ---DONE
-        - when an event with no data is selected all three jTables show nothing         ---DONE
-        - ecrRecordCount_jTextField shows number of records in ecrCompResults_jTable    ---DONE
-    Set up ecrTeam_jComboBox item state changed event handler:
-        - filters display in ecrCompResults_jTable by team selected, working in
-          conjunction with selected event                                               ---DONE
-        - does not affect ecrLeaderBoardAll_jTable or ecrLeaderBoardSelected_jTable     ---DONE
-    ecrExportCompResultsCSV_jButton clicked:
-        - if there is row data in ecrCompResults_jTable the data is written to external 
-          competitionTeamScores.csv file and a pop up displays confirmation             ---DONE
-        - if there is no data in ecrCompResults_jTable nothing happens                  ---DONE
-    ecrExportLeaderBoardsCSV_jButton clicked:
-        - if there is row data in ecrLeaderBoardSelected or ecrLeaderBoardAll the data
-          is written to external file eventTeamScores and a pop up displays confirmation---DONE
-        - if there is no data in either jTable nothing happens                          ---DONE
-
-03. ADD NEW COMPETITION RESULT PANEL
-    ancr_jButton clicked:
-        - ancrTeam1_jComboBox and ancrTeam2_jComboBox cannot be the same team           ---DONE
-        - ancrTeam1Points_jTextField and ancrTeam2Points_jTextField can only be numeric 
-          values: 0, 1 or 2 (cannot be empty)                                           ---DONE
-        - The sum of the two point scores must equal 2                                  ---DONE
-        - The same team1/team2 combination playing the same game in the same event
-          represents an existing record in the database and will produce error          ---DONE  
-        - if any validation checks fail display an error pop up with all failed checks  ---DONE
-        - if all validation checks pass display a pop up with a yes/no option displaying
-          teams to be saved to database                                                 ---DONE
-        - when no is clicked the action is cancelled, when yes is clicked the record
-          is written to the database (competition table)                                ---DONE
-        - update jTables in event competition results panel with new record             ---DONE
-
-04. ADD NEW TEAM PANEL
-    ant_jButton clicked:
-        - check that antNewTeamName_jTextField data does not already exist              ---DONE
-        - check that all jTextFields are not empty                                      ---DONE
-        - if any validation checks fail display an error pop up with all failed checks  ---DONE
-        - if all validation checks pass display a pop up with a yes/no option displaying
-          team name to be saved to database                                             ---DONE
-        - when no is clicked the action is cancelled, when yes is clicked the record
-          is written to the database (team table)                                       ---DONE
-        - update all four team jComboBoxes with new team name                           ---DONE
-
-05. UPDATE EXISTING TEAM PANEL
-    Set up uetTeamName_jComboBox item state changed event handler:
-        - display team.contact, team.phone and team.email in relevant jTextFields
-          according to team selected                                                    ---DONE
-    uet_jButton clicked:
-        - check that all jTextFields are not empty                                      ---DONE
-        - check that jTextFields contain new information/record to update isn't the same---DONE
-        - if any validation checks fail display an error pop up with all failed checks  ---DONE
-        - if all validation checks pass display a pop up with a yes/no option displaying
-          team to be saved to database                                                  ---DONE
-        - when no is clicked the action is cancelled, when yes is clicked the record
-          is updated on the database (team table)                                       ---DONE
-
-06. ADD NEW EVENT PANEL
-    Set up default jTextField values:
-        - the current date should be displayed in the format yyyy-MM-dd                 ---DONE
-        - a default location string set for location (TAFE Coomera)                     ---DONE
-    ane_jButton clicked:
-        - check that aneNewEventName_jTextField is unique and not already in database   ---DONE
-        - check that all jTextFields are not empty                                      ---DONE
-        - check that aneDate_jTextField is formatted to yyyy-MM-dd (10 characters total)
-          year, month, day must be numeric, dashes must be used to divide               ---DONE
-        - check that aneDate_jTextField month values are between 1 and 12               ---DONE
-        - check that aneDate_jTextField date numeric values are appropriate to the
-          month entered (eg: 1-29 for Feb(02), 1-31 for Mar(03), etc)                   ---DONE
-        - if any validation checks fail display an error pop up with all failed checks  ---DONE
-        - if all validation checks pass display a pop up with a yes/no option displaying
-          event to be saved to database                                                 ---DONE
-        - when no is clicked the action is cancelled, when yes is clicked the record
-          is written to the database (event table)                                      ---DONE
-        - update the two event jComboBoxes with new event data with proper formatting   ---DONE
-
-TESTING
-01. Refer to ICTPRG549_AT2_Test_Examples.docx
+GitHub Repository: https://github.com/LukeWait/gc-esports-app2
 *******************************************************************************/
-
 package gcesportsapp2;
 
 import java.io.BufferedWriter;
@@ -177,8 +62,8 @@ public class GCEsportsApp2 extends javax.swing.JFrame
     
     
     /***************************************************************************
-    Method:     GC_EGames_V2_GUI() constructor method
-    Purpose:    creates GC_EGames_V2_GUI jFrame with GUI controls
+    Method:     GCEsportsApp2() constructor method
+    Purpose:    creates GCEsportsApp2 jFrame with GUI controls
                 and sets up all data for jTable and jComboBoxes
     Inputs:     void
     Outputs:    void
@@ -338,8 +223,8 @@ public class GCEsportsApp2 extends javax.swing.JFrame
         // added a join to sort by event date
         sql = "SELECT competition.gameName, competition.team1, competition.team1Points, "
                    + "competition.team2, competition.team2Points, competition.eventName, event.date "
-            + "FROM goldcoast_esports.competition "
-            + "INNER JOIN goldcoast_esports.event ON competition.eventName=event.name "
+            + "FROM gc_esports.competition "
+            + "INNER JOIN gc_esports.event ON competition.eventName=event.name "
             + "ORDER BY date";
         // use dbRead object to read from database with sql statement and qryType
         dbRead = new DbRead(sql, "competition");
@@ -397,10 +282,10 @@ public class GCEsportsApp2 extends javax.swing.JFrame
     {
         // sql statement used to retrieve data from database
         sql = "SELECT team1 AS name, team1points AS points, eventName "
-            + "FROM goldcoast_esports.competition "
+            + "FROM gc_esports.competition "
             + "UNION ALL "
             + "SELECT team2, team2points, eventName "
-            + "FROM goldcoast_esports.competition";
+            + "FROM gc_esports.competition";
         // use dbRead object to read from database with sql statement and qryType
         dbRead = new DbRead(sql, "leaderBoard");
         
@@ -456,7 +341,6 @@ public class GCEsportsApp2 extends javax.swing.JFrame
     ***************************************************************************/
     private void displayCompResults()
     {
-        
         // remove all existing rows if there are any
         if (ecrCompResultsTableModel.getRowCount() > 0)
         {
@@ -713,7 +597,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
             
         // sql statement used to retrieve data from database
         sql = "SELECT name, date, location "
-            + "FROM goldcoast_esports.event "
+            + "FROM gc_esports.event "
             + "ORDER BY date;";
         // use dbRead object to read from database with sql statement and qryType
         dbRead = new DbRead(sql, "event");
@@ -799,7 +683,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
         
         // sql statement used to retrieve data from database
         sql = "SELECT name, contact, phone, email "
-            + "FROM goldcoast_esports.team "
+            + "FROM gc_esports.team "
             + "ORDER BY name;";
         // use dbRead object to read from database with sql statement and qryType
         dbRead = new DbRead(sql, "team");
@@ -878,7 +762,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
         
         // sql statement used to retrieve data from database
         sql = "SELECT name "
-            + "FROM goldcoast_esports.game "
+            + "FROM gc_esports.game "
             + "ORDER BY name;";
         // use dbRead object to read from database with sql statement and qryType
         dbRead = new DbRead(sql, "game");
@@ -1011,7 +895,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
       
     /***************************************************************************
     Method:     writeCompetitionCSV()
-    Purpose:    writes contents of ecrCompResults_jTable to external competitionTeamScores.csv
+    Purpose:    writes contents of ecrCompResults_jTable to external competition_results.csv
     Inputs:     void
     Outputs:    void
     ***************************************************************************/
@@ -1026,7 +910,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
             try
             {
                 // create writing objects designate the external file to write to
-                FileOutputStream fos = new FileOutputStream("competitionsTeamScores.csv", false);
+                FileOutputStream fos = new FileOutputStream("data/competition_results.csv", false);
                 OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");               
                 BufferedWriter bw = new BufferedWriter(osw);
 
@@ -1049,9 +933,9 @@ public class GCEsportsApp2 extends javax.swing.JFrame
                 // close the bufferedWriter object
                 bw.close(); 
                 
-                // display pop up displaying that the data was written to the external competitionTeamScore.csv
+                // display pop up displaying that the data was written to the external competition_results.csv
                 JOptionPane.showMessageDialog(null, "CSV data successfully written to file: "
-                        + "competitionTeamScores.csv", "CSV Data Exported!",
+                        + "data/competition_results.csv", "CSV Data Exported!",
                         JOptionPane.INFORMATION_MESSAGE);
             }
             // exceptions for try block
@@ -1069,7 +953,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
         // show any errors in pop up
         if (!errorMsg.isEmpty())
         {
-            JOptionPane.showMessageDialog(null, "PROBLEM WRITING TO: competitionTeamScores.csv\n"
+            JOptionPane.showMessageDialog(null, "PROBLEM WRITING TO: data/competition_results.csv\n"
                                         + errorMsg, "ERRORS DETECTED!", JOptionPane.ERROR_MESSAGE);
         }
     }// end writeCompetitionCSV()
@@ -1077,7 +961,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
     /***************************************************************************
     Method:     writeEventCSV()
     Purpose:    writes contents of ecrLeaderBoardSelected_jTable or ecrLeaderBoardAll_jTable
-                to eventTeamScores.csv depending on which table has contents displayed
+                to leaderboard_event.csv depending on which table has contents displayed
     Inputs:     void
     Outputs:    void
     ***************************************************************************/
@@ -1092,7 +976,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
             try
             {
                 // create objects and designate the external file to write to
-                FileOutputStream fos = new FileOutputStream("eventTeamScores.csv", false);
+                FileOutputStream fos = new FileOutputStream("data/leaderboard_event.csv", false);
                 OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");                
                 BufferedWriter bw = new BufferedWriter(osw);
                 
@@ -1114,9 +998,9 @@ public class GCEsportsApp2 extends javax.swing.JFrame
                 // close the bufferedWriter object
                 bw.close();
                 
-                // display pop up displaying that the data was written to the external eventTeamScore.csv
+                // display pop up displaying that the data was written to the external leaderboard_event.csv
                 JOptionPane.showMessageDialog(null, "CSV data successfully written to file: "
-                        + "eventTeamScores.csv", "CSV Data Exported!",
+                        + "data/leaderboard_event.csv", "CSV Data Exported!",
                         JOptionPane.INFORMATION_MESSAGE);
             }
             // exceptions for try block
@@ -1131,7 +1015,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
             try
             {
                 // create objects and designate the external file to write to
-                FileOutputStream fos = new FileOutputStream("allTeamScores.csv", false);
+                FileOutputStream fos = new FileOutputStream("data/leaderboard_all.csv", false);
                 OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");                
                 BufferedWriter bw = new BufferedWriter(osw);
                 
@@ -1153,9 +1037,9 @@ public class GCEsportsApp2 extends javax.swing.JFrame
                 // close the bufferedWriter object
                 bw.close();
                 
-                // display pop up displaying that the data was written to the external eventTeamScore.csv
+                // display pop up displaying that the data was written to the external leaderboard_all.csv
                 JOptionPane.showMessageDialog(null, "CSV data successfully written to file: "
-                        + "allTeamScores.csv", "CSV Data Exported!",
+                        + "data/leaderboard_all.csv", "CSV Data Exported!",
                         JOptionPane.INFORMATION_MESSAGE);
             }
             // exceptions for try block
@@ -1173,14 +1057,15 @@ public class GCEsportsApp2 extends javax.swing.JFrame
         // show any errors in pop up
         if (!errorMsg.isEmpty())
         {
-            JOptionPane.showMessageDialog(null, "PROBLEM WRITING TO: eventTeamScores.csv or allTeamScores.csv\n"
+            JOptionPane.showMessageDialog(null, "PROBLEM WRITING TO: data/leaderboard_event.csv "
+                                        + "or data/leaderboard_all.csv\n"
                                         + errorMsg, "ERRORS DETECTED!", JOptionPane.ERROR_MESSAGE);
         }
     }//end writeEventCSV()
     
     /***************************************************************************
     Method:     addNewCompResults()
-    Purpose:    add row to competition table of goldcoast_esports database with validated field data
+    Purpose:    add row to competition table of gc_esports database with validated field data
                 uses sql statements to dynamically write data to database with dbWrite
     Inputs:     void
     Outputs:    void
@@ -1202,7 +1087,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
                 int newCompID = compResultsArray.length + 1;
                 
                 // write field data to database with sql
-                sql = "INSERT INTO goldcoast_esports.competition "
+                sql = "INSERT INTO gc_esports.competition "
                     + "VALUES ('" + newCompID + "', '" 
                                   + ancrEvent_jComboBox.getSelectedItem() + "', '"
                                   + ancrGame_jComboBox.getSelectedItem() + "', '"
@@ -1219,7 +1104,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
                 // if writing is successful
                 if (dbWrite.getErrorMessage().isEmpty())
                 {
-                    System.out.println("Successful write operation to goldcoast_esports.competition");
+                    System.out.println("Successful write operation to gc_esports.competition");
                     System.out.println("***************************************\n");
 
                     // update compResultsArray, leaderBoardArray and jTables in eventCompResults_jPanel
@@ -1242,7 +1127,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
     
     /***************************************************************************
     Method:     addNewTeam()
-    Purpose:    add row to team table of goldcoast_esports database with validated field data
+    Purpose:    add row to team table of gc_esports database with validated field data
                 uses sql statements to dynamically write data to database with dbWrite
     Inputs:     void
     Outputs:    void
@@ -1261,7 +1146,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
             if (yesNo == JOptionPane.YES_OPTION)
             {
                 // write field data to database with sql
-                sql = "INSERT INTO goldcoast_esports.team "
+                sql = "INSERT INTO gc_esports.team "
                     + "VALUES ('" + antNewTeamName_jTextField.getText() + "', '"
                                   + antContactName_jTextField.getText() + "', '"
                                   + antPhoneNumber_jTextField.getText() + "', '"
@@ -1275,7 +1160,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
                 // if writing is successful
                 if (dbWrite.getErrorMessage().isEmpty())
                 {
-                    System.out.println("Successful write operation to goldcoast_esports.team");
+                    System.out.println("Successful write operation to gc_esports.team");
                     System.out.println("***************************************\n");                   
                     
                     // gate jComboBox events while updating contents of team jComboBoxees
@@ -1310,7 +1195,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
     
     /***************************************************************************
     Method:     updateExistingTeam()
-    Purpose:    update team table of goldcoast_esports database with validated field data
+    Purpose:    update team table of gc_esports database with validated field data
                 uses sql statements to dynamically update data on database with dbWrite
     Inputs:     void
     Outputs:    void
@@ -1329,7 +1214,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
             if (yesNo == JOptionPane.YES_OPTION)
             {               
                 // update database with field data using sql
-                sql = "UPDATE goldcoast_esports.team "
+                sql = "UPDATE gc_esports.team "
                     + "SET contact = '" + uetContactName_jTextField.getText() + "', "
                         + "phone = '" + uetPhoneNumber_jTextField.getText() + "', "
                         + "email = '" + uetEmailAddress_jTextField.getText() + "' "
@@ -1343,7 +1228,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
                 // if writing is successful
                 if (dbWrite.getErrorMessage().isEmpty())
                 {
-                    System.out.println("Succesful write operation to goldcoast_esports.team");
+                    System.out.println("Succesful write operation to gc_esports.team");
                     System.out.println("***************************************\n");
                     
                     // update teamsStrArray with new data
@@ -1378,7 +1263,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
     
     /***************************************************************************
     Method:     addNewEvent()
-    Purpose:    add row to event table of goldcoast_esports database with validated field data
+    Purpose:    add row to event table of gc_esports database with validated field data
                 uses sql statements to dynamically write data to database with dbWrite
     Inputs:     void
     Outputs:    void
@@ -1397,7 +1282,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
             if (yesNo == JOptionPane.YES_OPTION)
             {
                 // write field data to database with sql
-                sql = "INSERT INTO goldcoast_esports.event "
+                sql = "INSERT INTO gc_esports.event "
                     + "VALUES ('" + aneNewEventName_jTextField.getText() + "', '"
                                   + aneDate_jTextField.getText() + "', '"
                                   + aneLocation_jTextField.getText() + "')";
@@ -1410,7 +1295,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
                 // if writing is successful
                 if (dbWrite.getErrorMessage().isEmpty())
                 {
-                    System.out.println("Succesful write operation to goldcoast_esports.event");
+                    System.out.println("Succesful write operation to gc_esports.event");
                     System.out.println("***************************************\n");
                     
                     // gate jComboBox events while updating contents of event jComboBoxees
@@ -2324,27 +2209,27 @@ public class GCEsportsApp2 extends javax.swing.JFrame
     }//GEN-LAST:event_ecrExportLeaderBoardsCSV_jButtonActionPerformed
 
     private void ancr_jButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ancr_jButtonActionPerformed
-        // save new competition result to goldcoast_esports database
+        // save new competition result to gc_esports database
         addNewCompResults();
     }//GEN-LAST:event_ancr_jButtonActionPerformed
 
     private void ant_jButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ant_jButtonActionPerformed
-        // save new team to goldcoast_esports database
+        // save new team to gc_esports database
         addNewTeam();
     }//GEN-LAST:event_ant_jButtonActionPerformed
 
     private void uet_jButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uet_jButtonActionPerformed
-        // update existing team on goldcoast_esports database
+        // update existing team on gc_esports database
         updateExistingTeam();
     }//GEN-LAST:event_uet_jButtonActionPerformed
 
     private void ane_jButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ane_jButtonActionPerformed
-        // save new event to goldcoast_esports database
+        // save new event to gc_esports database
         addNewEvent();
     }//GEN-LAST:event_ane_jButtonActionPerformed
 
     private void uetTeamName_jComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uetTeamName_jComboBoxActionPerformed
-        // populate jTextFields with team data from goldcoast_esports database
+        // populate jTextFields with team data from gc_esports database
         // gate event when comboBoxStatus is false
         if (comboBoxStatus)
         {
@@ -2353,7 +2238,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
     }//GEN-LAST:event_uetTeamName_jComboBoxActionPerformed
 
     private void ecrEvent_jComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ecrEvent_jComboBoxActionPerformed
-        // populate jTables with competition data from goldcoast_esports database
+        // populate jTables with competition data from gc_esports database
         // gate event when comboBoxStatus is false
         if (comboBoxStatus)
         {
@@ -2362,7 +2247,7 @@ public class GCEsportsApp2 extends javax.swing.JFrame
     }//GEN-LAST:event_ecrEvent_jComboBoxActionPerformed
 
     private void ecrTeam_jComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ecrTeam_jComboBoxActionPerformed
-        // populate jTables with competition data from goldcoast_esports database
+        // populate jTables with competition data from gc_esports database
         // gate event when comboBoxStatus is false
         if (comboBoxStatus)
         {

@@ -1,14 +1,22 @@
 /*******************************************************************************
-File name:  DB_Write.java
-Purpose:    1.  Make a connection to the goldcoast_esports database
-                    - a connection string(s) is read in from an external config file
-                      containing the database URL, user id and password
-                    - academic exercise only, not recommended security practice
-            2.  Execute a write-only SQL query to insert or update a record
-Author:     Luke Wait
-Date:       27-Sept-2022
-Version:    2.2
-NOTES:      
+File name: DbWrite.java
+Description:    1.  Make a connection to the gc_esports database
+                        - a connection string(s) is read in from an external config file
+                          containing the database URL, user id and password
+                        - academic exercise only, not recommended security practice
+                2.  Execute a write-only SQL query to insert or update a record
+Version: 1.2.0
+Author: ┬  ┬ ┬┬┌─┌─┐┬ ┬┌─┐╦╔╦╗
+        │  │ │├┴┐├┤ │││├─┤║ ║
+        ┴─┘└─┘┴ ┴└─┘└┴┘┴ ┴╩ ╩
+Date: September 27, 2022
+License: MIT License
+
+Dependencies:
+Java JDK 17
+MySQL Connector/J 8.0.28
+
+GitHub Repository: https://github.com/LukeWait/gc-esports-app2
 *******************************************************************************/
 package gcesportsapp2;
 
@@ -24,7 +32,7 @@ import java.sql.SQLException;
 public class DbWrite 
 {
     // private data fields
-    // database login details (read from app.config)
+    // database login details (read from db_access.config)
     private String dbURL;
     private String usrID;
     private String usrPWD;  
@@ -36,7 +44,7 @@ public class DbWrite
     
     
     /***************************************************************************
-    Method:     DB_Write() constructor method
+    Method:     DbWrite() constructor method
     Purpose:    initialise private data fields
                 connect to database
                 run SQL write statements (UPDATE, INSERT, DELETE)
@@ -53,7 +61,7 @@ public class DbWrite
         try
         {
             // file io buffered reader (used to read external file)
-            BufferedReader br = new BufferedReader(new FileReader("app.config"));
+            BufferedReader br = new BufferedReader(new FileReader("db_access.config"));
             // get first line from external file
             String line = br.readLine();
             // set line counter (first line read in)

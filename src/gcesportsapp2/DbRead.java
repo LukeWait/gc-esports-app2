@@ -1,18 +1,24 @@
 /*******************************************************************************
-File name:  DB_Read.java
-Purpose:    1.  Make a connection to the goldcoast_esports database
-                    - a connection string(s) is read in from an external config file
-                      containing the database URL, user id and password
-                    - this is an academic exercise only, not recommended security practice!
-            2.  Execute a read-only SQL query to retrieve a result set of row values from database
-            3.  Result set is then read and values set up in relevant variables that are returned 
-                from the database and called from the GUI application
-Author:     Luke Wait
-Date:       29-Sept-2022
-Version:    2.2
-NOTES:      Removed maxCompID() and associated variables (used compResultsArray to calculate)
-            Added eventName to competition and leaderBoard qry types to enable sorting of
-            compResultsArray and leaderBoardArray in GC_EGames_V2_GUI
+File name: DbRead.java
+Description:    1.  Make a connection to the gc_esports database
+                        - a connection string(s) is read in from an external config file
+                          containing the database URL, user id and password
+                        - this is an academic exercise only, not recommended security practice!
+                2.  Execute a read-only SQL query to retrieve a result set of row values from database
+                3.  Result set is then read and values set up in relevant variables that are returned 
+                    from the database and called from the GUI application
+Version: 1.2.0
+Author: ┬  ┬ ┬┬┌─┌─┐┬ ┬┌─┐╦╔╦╗
+        │  │ │├┴┐├┤ │││├─┤║ ║
+        ┴─┘└─┘┴ ┴└─┘└┴┘┴ ┴╩ ╩
+Date: September 29, 2022
+License: MIT License
+
+Dependencies:
+Java JDK 17
+MySQL Connector/J 8.0.28
+
+GitHub Repository: https://github.com/LukeWait/gc-esports-app2
 *******************************************************************************/
 package gcesportsapp2;
 
@@ -29,7 +35,7 @@ import java.sql.Statement;
 public class DbRead 
 {
     // private data fields
-    // database login details (read from app.config)
+    // database login details (read from db_access.config)
     private String dbURL;
     private String usrID;
     private String usrPWD;   
@@ -45,7 +51,7 @@ public class DbRead
     
     
     /***************************************************************************
-    Method:     DB_Read() constructor method
+    Method:     DbRead() constructor method
     Purpose:    initialise private data fields
                 connect to database
                 run SQL read statements
@@ -68,7 +74,7 @@ public class DbRead
         try
         {
             // file io buffered reader (used to read external file)
-            BufferedReader br = new BufferedReader(new FileReader("app.config"));
+            BufferedReader br = new BufferedReader(new FileReader("db_access.config"));
             // get first line from external file
             String line = br.readLine();
             // set line counter (first line read in)
